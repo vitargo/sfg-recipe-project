@@ -21,6 +21,19 @@ public class Ingredient {
     public Ingredient() {
     }
 
+    public Ingredient(String description, BigDecimal anount, UnitOfMeasure uom) {
+        this.description = description;
+        this.anount = anount;
+        this.uom = uom;
+    }
+
+    public Ingredient(String description, BigDecimal anount, UnitOfMeasure uom, Recipe recipe) {
+        this.description = description;
+        this.anount = anount;
+        this.uom = uom;
+        this.recipe = recipe;
+    }
+
     public Long getId() {
         return id;
     }
