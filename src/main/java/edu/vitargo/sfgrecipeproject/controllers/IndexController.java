@@ -28,6 +28,7 @@ public class IndexController {
 
     @RequestMapping({"", "/", "/index"})
     String getIndex(Model model) {
+        log.info("Getting index page...");
         model.addAttribute("recipes", recipeRepository.findAll());
         log.error("IndexController >>> Start getIndex");
         Optional<Category> categoryOptional = categoryRepository.getCategoryByDescription("Ukrainian");

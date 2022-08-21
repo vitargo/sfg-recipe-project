@@ -4,15 +4,18 @@ import edu.vitargo.sfgrecipeproject.domain.*;
 import edu.vitargo.sfgrecipeproject.repositories.CategoryRepository;
 import edu.vitargo.sfgrecipeproject.repositories.RecipeRepository;
 import edu.vitargo.sfgrecipeproject.repositories.UnitOfMeasureRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -27,7 +30,9 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
     }
 
     @Override
+    @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
+        log.info("Load BootStrapData...");
         recipeRepository.saveAll(getRecipes());
     }
 
@@ -58,7 +63,6 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         if(pintUomOptional.isEmpty()){
             throw new RuntimeException("Pint UOM Not Found");
         }
-
 
         UnitOfMeasure eachUom = eachUomOptional.get();
         UnitOfMeasure tableSpoonUom = tableSpoonUomOptional.get();
@@ -104,6 +108,7 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         derunyRecipe.getCategories().add(ukrainianCategory);
 
         recipes.add(derunyRecipe);
+        log.info("Add Deruny recipe!");
 
         /*
          *   SYRNYKY
@@ -133,6 +138,7 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         syrnykyRecipe.getCategories().add(ukrainianCategory);
 
         recipes.add(syrnykyRecipe);
+        log.info("Add Syrnyky recipe!");
         return recipes;
     }
 }
