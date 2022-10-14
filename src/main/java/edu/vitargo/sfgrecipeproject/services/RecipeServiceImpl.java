@@ -1,5 +1,8 @@
 package edu.vitargo.sfgrecipeproject.services;
 
+import edu.vitargo.sfgrecipeproject.commands.RecipeCommand;
+import edu.vitargo.sfgrecipeproject.converters.RecipeCommandToRecipe;
+import edu.vitargo.sfgrecipeproject.converters.RecipeToRecipeCommand;
 import edu.vitargo.sfgrecipeproject.domain.Recipe;
 import edu.vitargo.sfgrecipeproject.exception.RecipeException;
 import edu.vitargo.sfgrecipeproject.repositories.RecipeRepository;
@@ -15,9 +18,13 @@ import java.util.Set;
 public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
+    private final RecipeCommandToRecipe recipeCommandToRecipe;
+    private final RecipeToRecipeCommand recipeToRecipeCommand;
 
-    public RecipeServiceImpl(RecipeRepository recipeRepository) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, RecipeCommandToRecipe recipeCommandToRecipe, RecipeToRecipeCommand recipeToRecipeCommand) {
         this.recipeRepository = recipeRepository;
+        this.recipeCommandToRecipe = recipeCommandToRecipe;
+        this.recipeToRecipeCommand = recipeToRecipeCommand;
     }
 
     @Override
@@ -36,5 +43,19 @@ public class RecipeServiceImpl implements RecipeService {
             throw new RecipeException("Recipe not found!");
         }
         return recipeOptional.get();
+    }
+
+    @Override
+    public RecipeCommand saveRecipeCommand(RecipeCommand command) {
+
+        Recipe detachedRecipe = recipeCommandToRecipe.convert(command);
+
+        if(detachedRecipe == null){
+            return null;
+        }
+
+        Recipe savedRecipe = recipeRepository.save(detachedRecipe);
+        log.debug("Saved recipe id = " + savedRecipe.getId());
+        return recipeToRecipeCommand.convert(savedRecipe);
     }
 }

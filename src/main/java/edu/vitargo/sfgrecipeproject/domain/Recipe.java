@@ -1,6 +1,5 @@
 package edu.vitargo.sfgrecipeproject.domain;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,7 +17,7 @@ import java.util.Set;
 public class Recipe {
 
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String description;
@@ -46,8 +45,8 @@ public class Recipe {
 
     @ManyToMany
     @JoinTable(name = "recipe_category",
-    joinColumns = @JoinColumn(name = "recipe_id"),
-            inverseJoinColumns =  @JoinColumn(name = "category_id"))
+            joinColumns = @JoinColumn(name = "recipe_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     @ToString.Exclude
     private Set<Category> categories = new HashSet<>();
 
@@ -56,7 +55,7 @@ public class Recipe {
         notes.setRecipe(this);
     }
 
-    public Recipe addIngredient(Ingredient ingredient){
+    public Recipe addIngredient(Ingredient ingredient) {
         ingredient.setRecipe(this);
         this.ingredients.add(ingredient);
         return this;

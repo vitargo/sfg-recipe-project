@@ -1,6 +1,5 @@
 package edu.vitargo.sfgrecipeproject.domain;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,7 +19,7 @@ public class Ingredient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String description;
-    private BigDecimal anount;
+    private BigDecimal amount;
 
     @OneToOne(fetch = FetchType.EAGER)
     private UnitOfMeasure uom;
@@ -33,7 +32,7 @@ public class Ingredient {
 
     public Ingredient(String description, BigDecimal anount, UnitOfMeasure uom) {
         this.description = description;
-        this.anount = anount;
+        this.amount = anount;
         this.uom = uom;
     }
 
