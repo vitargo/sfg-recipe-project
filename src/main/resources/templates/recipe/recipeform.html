@@ -18,6 +18,7 @@
 </head>
 <body>
 <!--/*@thymesVar id="recipe" type="edu.vitargo.sfgrecipeproject.domain.Recipe"*/-->
+
 <div class="container-fluid" style="margin-top: 20px">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
@@ -103,11 +104,12 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <ul>
+                                        <!--/*@thymesVar id="ingredient" type="edu.vitargo.sfgrecipeproject.commands.IngredientCommand"*/-->
                                         <li th:remove="all">1 Cup of milk</li>
                                         <li th:remove="all">1 Teaspoon of chocolate</li>
                                         <li th:each="ingredient : ${recipe.ingredients}"
                                             th:text="${(ingredient.getAmount() +
-                                        ' ' + ingredient.uom.getDescription() +
+                                        ' ' + ingredient.unitOfMeasureCommand.getDescription() +
                                         ' - ' + ingredient.getDescription())}">1 Teaspoon of Sugar
                                         </li>
                                     </ul>
