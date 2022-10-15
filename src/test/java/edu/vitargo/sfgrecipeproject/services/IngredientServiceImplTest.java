@@ -9,10 +9,12 @@ import edu.vitargo.sfgrecipeproject.domain.Ingredient;
 import edu.vitargo.sfgrecipeproject.domain.Recipe;
 import edu.vitargo.sfgrecipeproject.repositories.IngredientRepository;
 import edu.vitargo.sfgrecipeproject.repositories.RecipeRepository;
+import edu.vitargo.sfgrecipeproject.repositories.UnitOfMeasureRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.webservices.server.AutoConfigureMockWebServiceClient;
 
 import java.util.Optional;
 import java.util.Set;
@@ -31,13 +33,17 @@ class IngredientServiceImplTest {
     @Mock
     RecipeRepository recipeRepository;
 
+    @Mock
+    UnitOfMeasureRepository uomRepository;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         IngredientToIngredientCommand ingredientToIngredientCommandConverter  = new IngredientToIngredientCommand(new UnitOfMeasureToUnitOfMeasureCommand());
         IngredientCommandToIngredient ingredientCommandToIngredientConverter = new IngredientCommandToIngredient(new UnitOfMeasureCommandToUnitOfMeasure());
 
-        ingredientService = new IngredientServiceImpl(ingredientRepository, recipeRepository, ingredientToIngredientCommandConverter, ingredientCommandToIngredientConverter);
+
+        ingredientService = new IngredientServiceImpl(ingredientRepository, recipeRepository, ingredientToIngredientCommandConverter, ingredientCommandToIngredientConverter, uomRepository);
     }
 
     @Test

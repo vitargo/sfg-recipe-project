@@ -12,7 +12,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Entity
 public class UnitOfMeasure {
 
@@ -20,6 +20,12 @@ public class UnitOfMeasure {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String description;
+
+    @Builder
+    public UnitOfMeasure(Long id, String description) {
+        this.id = id;
+        this.description = description;
+    }
 
     @Override
     public boolean equals(Object o) {
