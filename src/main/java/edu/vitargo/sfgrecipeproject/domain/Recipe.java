@@ -1,8 +1,6 @@
 package edu.vitargo.sfgrecipeproject.domain;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -14,6 +12,7 @@ import java.util.Set;
 @Setter
 @ToString
 @Entity
+@NoArgsConstructor
 public class Recipe {
 
     @Id
@@ -49,6 +48,12 @@ public class Recipe {
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     @ToString.Exclude
     private Set<Category> categories = new HashSet<>();
+
+    @Builder
+    public Recipe(Long id, String description) {
+        this.id = id;
+        this.description = description;
+    }
 
     public void setNotes(Notes notes) {
         this.notes = notes;

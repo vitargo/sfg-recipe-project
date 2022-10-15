@@ -1,5 +1,6 @@
 package edu.vitargo.sfgrecipeproject.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -30,10 +31,17 @@ public class Ingredient {
     public Ingredient() {
     }
 
-    public Ingredient(String description, BigDecimal anount, UnitOfMeasure uom) {
+
+    public Ingredient(String description, BigDecimal amount, UnitOfMeasure uom) {
         this.description = description;
-        this.amount = anount;
+        this.amount = amount;
         this.uom = uom;
+    }
+
+    @Builder
+    public Ingredient(Long id, String description) {
+        this.id = id;
+        this.description = description;
     }
 
     @Override
