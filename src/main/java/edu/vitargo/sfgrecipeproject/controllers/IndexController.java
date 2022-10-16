@@ -3,7 +3,6 @@ package edu.vitargo.sfgrecipeproject.controllers;
 import edu.vitargo.sfgrecipeproject.domain.Category;
 import edu.vitargo.sfgrecipeproject.domain.UnitOfMeasure;
 import edu.vitargo.sfgrecipeproject.repositories.CategoryRepository;
-import edu.vitargo.sfgrecipeproject.repositories.RecipeRepository;
 import edu.vitargo.sfgrecipeproject.repositories.UnitOfMeasureRepository;
 import edu.vitargo.sfgrecipeproject.services.RecipeService;
 import lombok.extern.slf4j.Slf4j;

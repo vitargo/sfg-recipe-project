@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import static edu.vitargo.sfgrecipeproject.utils.Constants.RECIPE_ATTR;
+
 @Slf4j
 @Controller
 public class RecipeController {
@@ -22,13 +24,13 @@ public class RecipeController {
 
     @RequestMapping("/recipe/show/{id}")
     public String showById(@PathVariable String id, Model model){
-        model.addAttribute("recipe", recipeService.findById(Long.parseLong(id)));
+        model.addAttribute(RECIPE_ATTR, recipeService.findById(Long.parseLong(id)));
         return "recipe/show";
     }
 
     @RequestMapping("recipe/new")
     public String newRecipe(Model model){
-        model.addAttribute("recipe", new RecipeCommand());
+        model.addAttribute(RECIPE_ATTR, new RecipeCommand());
         return "recipe/recipeform";
     }
 
@@ -41,7 +43,7 @@ public class RecipeController {
 
     @RequestMapping("recipe/update/{id}")
     public String updateRecipe(@PathVariable String id, Model model){
-        model.addAttribute("recipe", recipeService.findCommandById(Long.parseLong(id)));
+        model.addAttribute(RECIPE_ATTR, recipeService.findCommandById(Long.parseLong(id)));
         return "recipe/recipeform";
     }
 

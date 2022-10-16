@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import static edu.vitargo.sfgrecipeproject.utils.Constants.INGREDIENT_ATTR;
+
 @Slf4j
 @Controller
 public class IngredientController {
@@ -43,7 +45,7 @@ public class IngredientController {
                                  @PathVariable String ingredientId,
                                  Model model){
         log.debug("Get ingredient for recipe id = {}, ingredient id = {}", recipeId, ingredientId);
-        model.addAttribute("ingredient", ingredientService.getIngredientByRecipeIdAndIngredientId(Long.parseLong(recipeId), Long.parseLong(ingredientId)));
+        model.addAttribute(INGREDIENT_ATTR, ingredientService.getIngredientByRecipeIdAndIngredientId(Long.parseLong(recipeId), Long.parseLong(ingredientId)));
         return "recipe/ingredients/show";
     }
 
@@ -53,7 +55,7 @@ public class IngredientController {
                                 @PathVariable String ingredientId,
                                 Model model) {
         log.debug("Update ingredient for recipe id = {}, ingredient id = {}", recipeId, ingredientId);
-        model.addAttribute("ingredient", ingredientService.getIngredientByRecipeIdAndIngredientId(Long.parseLong(recipeId), Long.parseLong(ingredientId)));
+        model.addAttribute(INGREDIENT_ATTR, ingredientService.getIngredientByRecipeIdAndIngredientId(Long.parseLong(recipeId), Long.parseLong(ingredientId)));
         model.addAttribute("uomList", unitOfMeasureService.getAllUom());
         return "recipe/ingredients/ingredientform";
     }
@@ -78,8 +80,22 @@ public class IngredientController {
         IngredientCommand ingredientCommand = new IngredientCommand();
         ingredientCommand.setRecipeId(Long.valueOf(recipeId));
         ingredientCommand.setUnitOfMeasureCommand(UnitOfMeasureCommand.builder().id(1L).build());
-        model.addAttribute("ingredient", ingredientCommand);
+        model.addAttribute(INGREDIENT_ATTR, ingredientCommand);
         model.addAttribute("uomList", unitOfMeasureService.getAllUom());
         return "recipe/ingredients/ingredientform";
+    }
+
+    @GetMapping
+    @RequestMapping("recipe/{recipeId}/ingredient/{ingredientId}/delete")
+    public String deleteIngredient(@PathVariable String recipeId,
+                                   @PathVariable String ingredientId){
+        log.debug("Delete ingredient for recipe id = {}, ingredient id = {}", recipeId, ingredientId);
+        RecipeCommand recipeCommand = recipeService.findCommandById(Long.parseLong(recipeId));
+        if(recipeCommand == null){
+            return "recipe/errorpage";
+        }
+        ingredientService.deleteIngredientByRecipeIdAndIngredientId(Long.parseLong(recipeId), Long.parseLong(ingredientId));
+
+        return "redirect:/recipe/" + recipeId + "/ingredients";
     }
 }

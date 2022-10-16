@@ -12,6 +12,8 @@ import edu.vitargo.sfgrecipeproject.repositories.RecipeRepository;
 import edu.vitargo.sfgrecipeproject.repositories.UnitOfMeasureRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.webservices.server.AutoConfigureMockWebServiceClient;
@@ -36,18 +38,19 @@ class IngredientServiceImplTest {
     @Mock
     UnitOfMeasureRepository uomRepository;
 
+    @Captor
+    ArgumentCaptor<Recipe> updatedRecipe;
+
+    private Optional<Recipe> optionalRecipe;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         IngredientToIngredientCommand ingredientToIngredientCommandConverter  = new IngredientToIngredientCommand(new UnitOfMeasureToUnitOfMeasureCommand());
         IngredientCommandToIngredient ingredientCommandToIngredientConverter = new IngredientCommandToIngredient(new UnitOfMeasureCommandToUnitOfMeasure());
 
-
         ingredientService = new IngredientServiceImpl(ingredientRepository, recipeRepository, ingredientToIngredientCommandConverter, ingredientCommandToIngredientConverter, uomRepository);
-    }
 
-    @Test
-    void getIngredientByRecipeIdAndIngredientId() {
         Recipe recipe = Recipe.builder().id(1L).description("Test").build();
         Ingredient ingredient1 = Ingredient.builder().id(1L).description("Ingredient 1").build();
         Ingredient ingredient2 = Ingredient.builder().id(2L).description("Ingredient 2").build();
@@ -56,7 +59,11 @@ class IngredientServiceImplTest {
         ingredients.add(ingredient1);
         ingredients.add(ingredient2);
         ingredients.add(ingredient3);
-        Optional<Recipe> optionalRecipe = Optional.of(recipe);
+        optionalRecipe = Optional.of(recipe);
+    }
+
+    @Test
+    void getIngredientByRecipeIdAndIngredientId() {
 
         when(recipeRepository.findById(anyLong())).thenReturn(optionalRecipe);
 
@@ -66,5 +73,18 @@ class IngredientServiceImplTest {
         assertEquals("Ingredient 3", result.getDescription());
 
         verify(recipeRepository, times(1)).findById(any());
+    }
+
+    @Test
+    void deleteIngredientByRecipeIdAndIngredientId() {
+
+        when(recipeRepository.findById(anyLong())).thenReturn(optionalRecipe);
+
+        ingredientService.deleteIngredientByRecipeIdAndIngredientId(1L, 3L);
+        verify(recipeRepository, times(1)).save(updatedRecipe.capture());
+
+        Recipe getRecipe = updatedRecipe.getValue();
+
+        assertEquals(2, getRecipe.getIngredients().size());
     }
 }
