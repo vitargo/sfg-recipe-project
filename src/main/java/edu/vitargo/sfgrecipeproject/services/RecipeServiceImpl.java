@@ -4,7 +4,6 @@ import edu.vitargo.sfgrecipeproject.commands.RecipeCommand;
 import edu.vitargo.sfgrecipeproject.converters.RecipeCommandToRecipe;
 import edu.vitargo.sfgrecipeproject.converters.RecipeToRecipeCommand;
 import edu.vitargo.sfgrecipeproject.domain.Recipe;
-import edu.vitargo.sfgrecipeproject.exception.RecipeException;
 import edu.vitargo.sfgrecipeproject.repositories.RecipeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,11 +37,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public Recipe findById(Long l) {
         Optional<Recipe> recipeOptional = recipeRepository.findById(l);
-
-        if(recipeOptional.isEmpty()){
-            throw new RecipeException("Recipe not found!");
-        }
-        return recipeOptional.get();
+        return recipeOptional.orElse(null);
     }
 
     @Override
@@ -50,7 +45,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         Recipe detachedRecipe = recipeCommandToRecipe.convert(command);
 
-        if(detachedRecipe == null){
+        if (detachedRecipe == null) {
             return null;
         }
 

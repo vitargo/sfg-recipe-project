@@ -9,13 +9,14 @@ import edu.vitargo.sfgrecipeproject.exception.RecipeException;
 import edu.vitargo.sfgrecipeproject.repositories.IngredientRepository;
 import edu.vitargo.sfgrecipeproject.repositories.RecipeRepository;
 import edu.vitargo.sfgrecipeproject.repositories.UnitOfMeasureRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 @Service
-public class IngredientServiceImpl implements IngredientService{
+public class IngredientServiceImpl implements IngredientService {
 
     private final IngredientRepository ingredientRepository;
     private final RecipeRepository recipeRepository;
@@ -34,12 +35,12 @@ public class IngredientServiceImpl implements IngredientService{
     @Override
     public IngredientCommand getIngredientByRecipeIdAndIngredientId(Long recipeId, Long ingredientId) {
         Optional<Recipe> recipe = recipeRepository.findById(recipeId);
-        if(recipe.isPresent()){
+        if (recipe.isPresent()) {
             Optional<IngredientCommand> ingredient = recipe.get().getIngredients().stream()
                     .filter(i -> i.getId().equals(ingredientId))
                     .map(ingredientToIngredientCommandConverter::convert)
                     .findFirst();
-            if(ingredient.isPresent()){
+            if (ingredient.isPresent()) {
                 return ingredient.get();
             }
         }
@@ -50,26 +51,42 @@ public class IngredientServiceImpl implements IngredientService{
     public IngredientCommand saveIngredientCommand(IngredientCommand command) {
         Optional<Recipe> optionalRecipe = recipeRepository.findById(command.getRecipeId());
 
-        if(optionalRecipe.isPresent()){
+        if (optionalRecipe.isPresent()) {
             Recipe recipe = optionalRecipe.get();
             Optional<Ingredient> optionalIngredient = recipe.getIngredients().stream()
                     .filter(i -> i.getId().equals(command.getId()))
                     .findFirst();
-            if(optionalIngredient.isPresent()){
+            if (optionalIngredient.isPresent()) {
                 Ingredient ingredient = optionalIngredient.get();
                 ingredient.setDescription(command.getDescription());
                 ingredient.setAmount(command.getAmount());
                 ingredient.setUom(uomRepository.findById(command.getUnitOfMeasureCommand().getId()).orElseThrow(() -> new RecipeException("Not Fount Unit of measure!")));
             } else {
-                recipe.addIngredient(Objects.requireNonNull(ingredientCommandToIngredientConverter.convert(command)));
+                Ingredient ingredient = ingredientCommandToIngredientConverter.convert(command);
+                if (ingredient != null) {
+                    ingredient.setRecipe(recipe);
+                    recipe.addIngredient(ingredient);
+                }
             }
 
             Recipe savedRecipe = recipeRepository.save(recipe);
 
-            return savedRecipe.getIngredients().stream()
-                    .filter(i -> i.getId().equals(command.getId()))
-                    .map(ingredientToIngredientCommandConverter::convert)
-                    .findFirst().orElse(new IngredientCommand());
+            Optional<Ingredient> saveOptionalIngredient;
+            if(command.getId() != null) {
+                saveOptionalIngredient = savedRecipe.getIngredients().stream()
+                        .filter(i -> i.getId().equals(command.getId()))
+                        .findFirst();
+            } else {
+                saveOptionalIngredient = savedRecipe.getIngredients().stream()
+                        .filter(recipeIngredients -> recipeIngredients.getDescription().equals(command.getDescription()))
+                        .filter(recipeIngredients -> recipeIngredients.getAmount().equals(command.getAmount()))
+                        .filter(recipeIngredients -> recipeIngredients.getUom().getId().equals(command.getUnitOfMeasureCommand().getId()))
+                        .findFirst();
+            }
+            log.info("!!!!!!!!!!!!!!!!!!!!!!!!! -> " + (saveOptionalIngredient.isPresent()? saveOptionalIngredient.get().getId():"NULL"));
+            if(saveOptionalIngredient.isPresent()){
+                return ingredientToIngredientCommandConverter.convert(saveOptionalIngredient.get());
+            }
         }
         return new IngredientCommand();
     }

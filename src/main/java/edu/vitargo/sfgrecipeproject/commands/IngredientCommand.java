@@ -1,6 +1,5 @@
 package edu.vitargo.sfgrecipeproject.commands;
 
-import edu.vitargo.sfgrecipeproject.domain.UnitOfMeasure;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

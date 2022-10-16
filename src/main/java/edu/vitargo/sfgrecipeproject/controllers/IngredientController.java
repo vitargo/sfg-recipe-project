@@ -1,6 +1,8 @@
 package edu.vitargo.sfgrecipeproject.controllers;
 
 import edu.vitargo.sfgrecipeproject.commands.IngredientCommand;
+import edu.vitargo.sfgrecipeproject.commands.RecipeCommand;
+import edu.vitargo.sfgrecipeproject.commands.UnitOfMeasureCommand;
 import edu.vitargo.sfgrecipeproject.services.IngredientService;
 import edu.vitargo.sfgrecipeproject.services.RecipeService;
 import edu.vitargo.sfgrecipeproject.services.UnitOfMeasureService;
@@ -24,10 +26,14 @@ public class IngredientController {
     }
 
     @GetMapping
-    @RequestMapping("recipe/{id}/ingredients")
-    public String getAllIngredients(@PathVariable String id, Model model){
-        log.debug("Get list of ingredients for recipe id = {}", id);
-        model.addAttribute("recipe", recipeService.findCommandById(Long.parseLong(id)));
+    @RequestMapping("recipe/{recipeId}/ingredients")
+    public String getAllIngredients(@PathVariable String recipeId, Model model){
+        log.debug("Get list of ingredients for recipe id = {}", recipeId);
+        RecipeCommand recipeCommand = recipeService.findCommandById(Long.parseLong(recipeId));
+        if (recipeCommand == null){
+            return "error/errorpage";
+        }
+        model.addAttribute("recipe", recipeService.findCommandById(Long.parseLong(recipeId)));
         return "recipe/ingredients/list";
     }
 
@@ -56,8 +62,24 @@ public class IngredientController {
     public String saveOrUpdate(@ModelAttribute IngredientCommand command){
         IngredientCommand savedCommand = ingredientService.saveIngredientCommand(command);
 
-//        log.debug("Save recipe id = {}, ingredient id = {}", savedCommand.getRecipeId(), savedCommand.getId());
+        log.debug("Save recipe id = {}, ingredient id = {}", savedCommand.getRecipeId(), savedCommand.getId());
 
         return "redirect:/recipe/" + savedCommand.getRecipeId() + "/ingredient/" + savedCommand.getId() + "/show";
+    }
+
+    @GetMapping
+    @RequestMapping("recipe/{recipeId}/ingredient/new")
+    public String newIngredient(@PathVariable String recipeId, Model model){
+        log.debug("Get ingredient for recipe id = {}", recipeId);
+        RecipeCommand recipeCommand = recipeService.findCommandById(Long.parseLong(recipeId));
+        if (recipeCommand == null){
+            return "error/errorpage";
+        }
+        IngredientCommand ingredientCommand = new IngredientCommand();
+        ingredientCommand.setRecipeId(Long.valueOf(recipeId));
+        ingredientCommand.setUnitOfMeasureCommand(UnitOfMeasureCommand.builder().id(1L).build());
+        model.addAttribute("ingredient", ingredientCommand);
+        model.addAttribute("uomList", unitOfMeasureService.getAllUom());
+        return "recipe/ingredients/ingredientform";
     }
 }
